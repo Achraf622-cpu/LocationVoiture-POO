@@ -5,7 +5,7 @@ include 'User.php';
 
 // Initialize the database and user class
 $db = new Database();
-$user = new User($db->conn);
+$user = new User($db->getConnection());
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user-login'])) {
     try {
