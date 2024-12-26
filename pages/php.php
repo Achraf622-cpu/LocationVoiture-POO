@@ -1,25 +1,21 @@
-
 <?php
-$servername = "localhost";
-$username = "root";
-$password = "password";
-$dbname = "location";
+class Database {
+    private $conn;
 
-$conn = mysqli_connect($servername, $username, $password, $dbname);
+    public function __construct($host = "localhost", $dbname = "location", $user = "root", $password = "1234") {
+        try {
+            $this->conn = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $user, $password);
+            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch (PDOException $e) {
+            die("Connection failed: " . $e->getMessage());
+        }
+    }
 
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+    // Execute a query with optional parameters
+    public function query($sql, $params = []) {
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute($params);
+        return $stmt;
+    }
 }
-
-
-try {
-    $conn = new PDO("mysql:host=$servername;dbname=$dbname;charset=utf8", $username, $password, );
-
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    echo "Connected successfully";
-  } catch(PDOException $e) {
-    echo "Connection failed: " . $e->getMessage();
-  }
-
-
 ?>
