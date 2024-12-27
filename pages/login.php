@@ -16,24 +16,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user-login'])) {
         // Attempt login
         $loggedInUser = $user->login($email, $password);
 
-        // Set session data
-        $_SESSION['user_id'] = $loggedInUser['id'];
-        $_SESSION['user_email'] = $loggedInUser['email'];
-        $_SESSION['user_role'] = ($loggedInUser['role_id'] == 1) ? 'admin' : 'user';
+        // Check if the user exists
+        if ($loggedInUser) {
+            // Set session data
+            $_SESSION['user_id'] = $loggedInUser['id'];
+            $_SESSION['user_email'] = $loggedInUser['email'];
+            $_SESSION['user_role'] = ($loggedInUser['role'] == 'admin') ? 'admin' : 'client'; // Check for 'admin' or 'client'
 
-        // Redirect based on role
-        if ($_SESSION['user_role'] === 'admin') {
-            header("Location: admin_home.php");
+            // Redirect based on role
+            if ($_SESSION['user_role'] === 'admin') {
+                header("Location: index.php"); // Redirect admin to index.php
+            } else {
+                header("Location: index-clients.php"); // Redirect client to index-clients.php
+            }
+            exit();
         } else {
-            header("Location: home.php");
+            throw new Exception("Invalid email or password.");
         }
-        exit();
     } catch (Exception $e) {
         // Store the error message in the session
         $_SESSION['error'] = $e->getMessage();
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -70,3 +76,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user-login'])) {
   </div>
 </body>
 </html>
+

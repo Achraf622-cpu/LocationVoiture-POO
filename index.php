@@ -6,6 +6,6 @@
     <title>index</title>
 </head>
 <body>
-    <a href="./pages/clietns.php">wrak hna</a>
+    <a href="./pages/login.php">wrak hna</a>
 </body>
 </html>

@@ -4,7 +4,7 @@ class Database {
     private $dbname = 'location';
     private $username = 'root';
     private $password = '1234';
-    private $conn;
+    public $conn;
 
     public function __construct() {
         try {
