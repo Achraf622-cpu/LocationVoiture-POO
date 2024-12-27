@@ -3,7 +3,6 @@ include './php.php';
 include 'Contrats.php';
 session_start();
 
-
 $database = new Database();
 $conn = $database->getConnection();
 
@@ -19,6 +18,22 @@ if (isset($_POST['add-reservation'])) {
     $contrat->end_date = $_POST['end-date']; // End Date
     $contrat->total = $_POST['total']; // Total amount
 
+    // Add the reservation (contract)
+    if ($contrat->addContrat()) {
+    } else {
+        echo "Failed to add reservation.";
+    }
+}
+
+// Handle the deletion of a contract
+if (isset($_GET['delete_id'])) {
+    $contract_id = $_GET['delete_id'];
+
+    if ($contrat->deleteContrat($contract_id)) {
+
+    } else {
+
+    }
 }
 
 // Fetch data for the dropdowns (clients and cars)
@@ -116,7 +131,7 @@ $reservations_result = $contrat->getContrats(); // Using the getContrats method 
                                     <td>{$reservation['Start_Date']}</td>
                                     <td>{$reservation['End_Date']}</td>
                                     <td>{$reservation['Total']}</td>
-                                    <td><a href='../phpfunctions/deleteReservation.php?id={$reservation['ID']}' class='btn btn-delete'>Delete</a></td>
+                                    <td><a href='?delete_id={$reservation['ID']}' class='btn btn-delete'>Delete</a></td>
                                 </tr>";
                         } ?>
                     </tbody>
