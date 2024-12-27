@@ -9,13 +9,25 @@ class Dashboard {
     }
 
     public function getCount($tableName) {
-        $query = "SELECT COUNT(*) AS total FROM $tableName";
-        $stmt = $this->db->prepare($query);
-        $stmt->execute();
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result['total'] ?? 0;
+        // Ensure that table names are safe or predefined
+        $validTables = ['Clients', 'Voitures', 'contracts'];
+        if (!in_array($tableName, $validTables)) {
+            return 0; // Invalid table name
+        }
+
+        try {
+            $query = "SELECT COUNT(*) AS total FROM $tableName";
+            $stmt = $this->db->prepare($query);
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result['total'] ?? 0;
+        } catch (PDOException $e) {
+            // Handle query failure
+            return 0;
+        }
     }
 }
+
 
 // Initialize database connection
 $database = new Database();
@@ -24,9 +36,12 @@ $conn = $database->getConnection(); // Ensure Database class has a getConnection
 $dashboard = new Dashboard($conn);
 
 // Fetch counts
+// Fetch counts
 $client_count = $dashboard->getCount('Clients');
 $car_count = $dashboard->getCount('Voitures');
 $contract_count = $dashboard->getCount('contracts');
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
