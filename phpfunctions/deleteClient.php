@@ -1,21 +1,24 @@
 <?php
-require "../pages/php.php";
+// deleteClient.php
+include('../pages/php.php');
+$db = new Database();
+$conn = $db->getConnection();
 
-if (isset($_GET["id"]) && is_numeric($_GET["id"])) {
-    $id = $_GET["id"];
+if (isset($_GET['id'])) {
+    $user_id = $_GET['id'];
 
-    $stmt = $conn->prepare("DELETE FROM Clients WHERE num_client = ?");
-    $stmt->bind_param("i", $id);
-
+    // Prepare and execute the DELETE query
+    $stmt = $conn->prepare("DELETE FROM users WHERE id = :id");
+    $stmt->bindParam(':id', $user_id);
+    
     if ($stmt->execute()) {
+        // Redirect back to the clients page after deletion
         header("Location: ../pages/clietns.php");
         exit();
     } else {
-        echo "Error: " . $stmt->error;
+        echo "Failed to delete the client.";
     }
-
-    $stmt->close();
 } else {
-    echo "Invalid or missing ID.";
+    echo "Invalid request.";
 }
 ?>

@@ -1,35 +1,39 @@
 <?php
-include 'php.php'; // Include your database connection file
+include './php.php';
+include 'Contrats.php';
+session_start();
 
-if (isset($_POST['add-reservation'])) {  
-    $client_id = $_POST['client-id']; // Get Client ID from form
-    $car_id = $_POST['car-id']; // Get Car ID from form
-    $start_date = $_POST['start-date']; // Get Start Date
-    $end_date = $_POST['end-date']; // Get End Date
-    $total = $_POST['total']; // Get Total (if manually entered)
 
-    if (!empty($client_id) && !empty($car_id) && !empty($start_date) && !empty($end_date) && !empty($total)) {
-        // Insert into contracts table
-        $sql = "INSERT INTO contracts (Client_ID, Car_ID, Start_Date, End_Date, Total) 
-                VALUES ('$client_id', '$car_id', '$start_date', '$end_date', '$total')";
-        mysqli_query($conn, $sql);
-    }
+$database = new Database();
+$conn = $database->getConnection();
+
+// Create a new instance of the Contrat class
+$contrat = new Contrat($conn);
+
+// Handle the form submission for adding a reservation (contract)
+if (isset($_POST['add-reservation'])) {
+    // Get the form data
+    $contrat->user_id = $_POST['client-id']; // Client ID
+    $contrat->car_id = $_POST['car-id']; // Car ID
+    $contrat->start_date = $_POST['start-date']; // Start Date
+    $contrat->end_date = $_POST['end-date']; // End Date
+    $contrat->total = $_POST['total']; // Total amount
+
 }
 
-// Fetch data for the dropdowns
-$clients_sql = "SELECT num_client, nom FROM Clients";
-$clients_result = mysqli_query($conn, $clients_sql);
+// Fetch data for the dropdowns (clients and cars)
+$clients_sql = "SELECT id, username FROM users WHERE role = 'client'"; // Updated query
+$clients_stmt = $conn->prepare($clients_sql);
+$clients_stmt->execute();
+$clients_result = $clients_stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $cars_sql = "SELECT num_immatriculation, modele FROM Voitures";
-$cars_result = mysqli_query($conn, $cars_sql);
+$cars_stmt = $conn->prepare($cars_sql);
+$cars_stmt->execute();
+$cars_result = $cars_stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Fetch existing reservations
-$reservations_sql = "
-    SELECT r.ID, c.nom AS client_name, v.modele AS car_model, r.Start_Date, r.End_Date, r.Total 
-    FROM contracts r 
-    JOIN Clients c ON r.Client_ID = c.num_client 
-    JOIN Voitures v ON r.Car_ID = v.num_immatriculation";
-$reservations_result = mysqli_query($conn, $reservations_sql);
+// Fetch existing reservations using the Contrat class
+$reservations_result = $contrat->getContrats(); // Using the getContrats method from Contrat class
 ?>
 
 <!DOCTYPE html>
@@ -39,7 +43,6 @@ $reservations_result = mysqli_query($conn, $reservations_sql);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reservations</title>
     <link rel="stylesheet" href="../style/reservations.css">
-
 </head>
 <body>
     <div class="container">
@@ -58,8 +61,8 @@ $reservations_result = mysqli_query($conn, $reservations_sql);
                         <label for="client-id">Client</label>
                         <select id="client-id" name="client-id" required>
                             <option value="" disabled selected>Select Client</option>
-                            <?php while ($client = mysqli_fetch_assoc($clients_result)) {
-                                echo "<option value='{$client['num_client']}'>{$client['nom']}</option>";
+                            <?php foreach ($clients_result as $client) {
+                                echo "<option value='{$client['id']}'>{$client['username']}</option>";
                             } ?>
                         </select>
                     </div>
@@ -67,7 +70,7 @@ $reservations_result = mysqli_query($conn, $reservations_sql);
                         <label for="car-id">Car</label>
                         <select id="car-id" name="car-id" required>
                             <option value="" disabled selected>Select Car</option>
-                            <?php while ($car = mysqli_fetch_assoc($cars_result)) {
+                            <?php foreach ($cars_result as $car) {
                                 echo "<option value='{$car['num_immatriculation']}'>{$car['modele']}</option>";
                             } ?>
                         </select>
@@ -104,7 +107,7 @@ $reservations_result = mysqli_query($conn, $reservations_sql);
                         </tr>
                     </thead>
                     <tbody>
-                        <?php while ($reservation = mysqli_fetch_assoc($reservations_result)) {
+                        <?php foreach ($reservations_result as $reservation) {
                             echo "
                                 <tr>
                                     <td>{$reservation['ID']}</td>

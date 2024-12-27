@@ -46,7 +46,7 @@ $cars = $voiture->getAll(); // Use the getAll method to fetch the cars
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clients Page</title>
+    <title>Voiture Page</title>
     <link rel="stylesheet" href="../style/clients.css">
 </head>
 <body>

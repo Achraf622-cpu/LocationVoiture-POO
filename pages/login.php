@@ -3,31 +3,31 @@ session_start();
 include 'php.php';
 include 'User.php';
 
-// Initialize the database and user class
+
 $db = new Database();
 $user = new User($db->getConnection());
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user-login'])) {
     try {
-        // Get user inputs
+
         $email = trim($_POST['user-email']);
         $password = trim($_POST['user_password']);
 
-        // Attempt login
+
         $loggedInUser = $user->login($email, $password);
 
-        // Check if the user exists
+
         if ($loggedInUser) {
-            // Set session data
+
             $_SESSION['user_id'] = $loggedInUser['id'];
             $_SESSION['user_email'] = $loggedInUser['email'];
             $_SESSION['user_role'] = ($loggedInUser['role'] == 'admin') ? 'admin' : 'client'; // Check for 'admin' or 'client'
 
-            // Redirect based on role
+
             if ($_SESSION['user_role'] === 'admin') {
                 header("Location: index.php"); // Redirect admin to index.php
             } else {
-                header("Location: index-clients.php"); // Redirect client to index-clients.php
+                header("Location: clietns.php"); // Redirect client to index-clients.php
             }
             exit();
         } else {

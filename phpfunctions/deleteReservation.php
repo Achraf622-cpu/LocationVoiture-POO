@@ -1,32 +1,41 @@
 <?php
-require "../pages/php.php"; // Include the connection script
+include '../pages/php.php';
 
-if (isset($_GET["id"])) {
-    $id = $_GET["id"];
+// Create a new instance of the Database class
+$database = new Database();
+$conn = $database->getConnection(); // Get the PDO connection
 
+// Check if an ID is provided in the URL
+if (isset($_GET['id']) && !empty($_GET['id'])) {
+    $reservation_id = $_GET['id'];
 
-    if (!is_numeric($id)) {
-        echo "Invalid ID.";
-        exit();
-    }
+    // Prepare SQL query to delete the reservation
+    $sql = "DELETE FROM contracts WHERE ID = :reservation_id";
 
-    $stmt = $conn->prepare("DELETE FROM contracts WHERE ID = ?");
-    if ($stmt) {
-        $stmt->bind_param("i", $id);
+    try {
+        // Prepare the statement
+        $stmt = $conn->prepare($sql);
 
+        // Bind the reservation ID to the query
+        $stmt->bindParam(':reservation_id', $reservation_id, PDO::PARAM_INT);
+
+        // Execute the query
         if ($stmt->execute()) {
-
-            header("Location: ../pages/reservations.php");
+            // Redirect to the reservations page with a success message
+            header("Location: ../pages/reservations.php?status=success");
             exit();
         } else {
-            echo "Error executing query: " . $stmt->error;
+            // Redirect to the reservations page with an error message
+            header("Location: ../pages/reservations.php?status=error");
+            exit();
         }
-
-        $stmt->close();
-    } else {
-        echo "Error preparing statement: " . $conn->error;
+    } catch (PDOException $e) {
+        // Handle any errors during the process
+        echo "Error: " . $e->getMessage();
     }
 } else {
-    echo "No ID provided.";
+    // If no ID is provided, redirect with an error message
+    header("Location: ../pages/reservations.php?status=error");
+    exit();
 }
 ?>
