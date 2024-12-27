@@ -1,9 +1,9 @@
 <?php
 class User {
-    private $db;
+    protected $db;
     public $email;
-    private $password;
-    private $role; // Role of the user
+    protected $password;
+    protected $role; // Changed to protected
 
     public function __construct($dbConnection) {
         $this->db = $dbConnection;

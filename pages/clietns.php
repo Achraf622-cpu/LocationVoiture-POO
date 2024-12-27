@@ -1,7 +1,32 @@
 <?php
-session_start(); 
+include './php.php'; // Your database connection
+include 'User.php'; // Include User class
+include 'Clients.php'; // Include Client class
 
-$_SESSION['last_activity'] = time();
+session_start();
+
+// Create a new instance of the Client class
+$database = new Database();
+$conn = $database->getConnection();
+$client = new Client($conn);
+
+// Check if a client needs to be deleted (banned)
+if (isset($_GET['delete_id'])) {
+    $client_id = $_GET['delete_id']; // Get the client ID from the URL
+    
+    if ($client->deleteClient($client_id)) {
+        $_SESSION['message'] = 'Client banned successfully.';
+    } else {
+        $_SESSION['message'] = 'Failed to ban client.';
+    }
+    header('Location: Clients.php'); // Redirect back to the Clients page
+    exit();
+}
+
+// Fetch all clients from the database
+$stmt = $conn->prepare("SELECT * FROM users WHERE role = 'client'");
+$stmt->execute();
+$clients = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -38,17 +63,6 @@ $_SESSION['last_activity'] = time();
                     </thead>
                     <tbody class="table-body">
                         <?php
-                        // Database connection
-                        include('./php.php');
-                        $db = new Database();
-                        $conn = $db->getConnection();
-
-                        // Fetch clients with the role 'client'
-                        $stmt = $conn->prepare("SELECT * FROM users WHERE role = 'client'");
-                        $stmt->execute();
-                        $clients = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-                        // Display clients in the table
                         if (count($clients) > 0) {
                             foreach ($clients as $client) {
                                 echo "
@@ -57,7 +71,7 @@ $_SESSION['last_activity'] = time();
                                         <td class='table-data'>{$client['username']}</td>
                                         <td class='table-data'>{$client['email']}</td>
                                         <td class='table-data'>
-                                            <a href='../phpfunctions/deleteClient.php?id={$client['id']}' class='btn btn-delete'>Supprimer</a>
+                                            <a href='Clients.php?delete_id={$client['id']}' class='btn btn-delete'>Supprimer</a>
                                         </td>
                                     </tr>";
                             }
