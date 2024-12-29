@@ -1,7 +1,7 @@
 <?php
 session_start();
-include 'php.php';
-include 'User.php';
+include '../phpfunctions/php.php';
+include '../phpfunctions/User.php';
 
 
 $db = new Database();

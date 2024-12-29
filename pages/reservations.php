@@ -1,6 +1,6 @@
 <?php
-include './php.php';
-include 'Contrats.php';
+include '../phpfunctions/php.php';
+include '../phpfunctions/Contrats.php';
 session_start();
 
 $database = new Database();

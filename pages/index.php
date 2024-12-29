@@ -1,5 +1,5 @@
 <?php
-require_once 'php.php';
+require_once '../phpfunctions/php.php';
 
 class Dashboard {
     private $db;

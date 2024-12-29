@@ -1,7 +1,7 @@
 <?php
-include './php.php'; // Your database connection
-include 'User.php'; // Include User class
-include 'Clients.php'; // Include Client class
+include '../phpfunctions/php.php'; 
+include '../phpfunctions/User.php'; 
+include '../phpfunctions/Clients.php'; 
 
 session_start();
 

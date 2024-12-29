@@ -1,6 +1,6 @@
 <?php
-include 'php.php';
-include 'voitures.php';
+include '../phpfunctions/php.php';
+include '../phpfunctions/voitures.php';
 
 // Initialize the database and voiture classes
 $db = new Database();
