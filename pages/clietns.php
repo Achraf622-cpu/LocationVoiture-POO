@@ -1,22 +1,33 @@
 <?php
-include 'php.php';
+include '../phpfunctions/php.php'; 
+include '../phpfunctions/User.php'; 
+include '../phpfunctions/Clients.php'; 
 
-if (isset($_POST['add-client'])) {  
-    $nom = $_POST['client-name'];
-    $adresse = $_POST['email'];
-    $num_telephone = $_POST['phone'];
+session_start();
+
+// Create a new instance of the Client class
+$database = new Database();
+$conn = $database->getConnection();
+$client = new Client($conn);
+
+// Check if a client needs to be deleted (banned)
+if (isset($_GET['delete_id'])) {
+    $client_id = $_GET['delete_id']; // Get the client ID from the URL
     
-    if(!empty($nom) && !empty($adresse) && !empty($num_telephone)){
-        $sql = "INSERT INTO Clients (num_client,nom, adresse, num_telephone) 
-        VALUES (null,'$nom', '$adresse', '$num_telephone')";
-        mysqli_query($conn, $sql);
+    if ($client->deleteClient($client_id)) {
+        $_SESSION['message'] = 'Client banned successfully.';
+    } else {
+        $_SESSION['message'] = 'Failed to ban client.';
     }
-  
+    header('Location: Clients.php'); // Redirect back to the Clients page
+    exit();
 }
-$sql = "SELECT * FROM Clients";
-$result = mysqli_query($conn, $sql);
 
-?>  
+// Fetch all clients from the database
+$stmt = $conn->prepare("SELECT * FROM users WHERE role = 'client'");
+$stmt->execute();
+$clients = $stmt->fetchAll(PDO::FETCH_ASSOC);
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -28,82 +39,48 @@ $result = mysqli_query($conn, $sql);
 </head>
 <body>
     <div class="container">
-    <?php  include('../layout/_HEAD.php') ?>
+        <?php include('../layout/_HEAD.php') ?>
 
-      
-
-            <!-- Client Form -->
-            <!-- Main Content -->
+        <!-- Client List -->
         <main class="main-content">
             <header class="header">
-                <h1 class="header-title">Informations voiture</h1>
-                <p class="header-date">Date: 27/12/2020</p>
+                <h1 class="header-title">Informations client</h1>
+                <p class="header-date">Date: <?php echo date('d/m/Y'); ?></p>
             </header>
-
-            <!-- Client Form -->
-            <section class="client-form-section">
- <form class="client-form" method="POST" action="clietns.php">
-        <div class="form-group">
-            <label for="client-name" class="form-label">Name</label>
-            <input type="text" id="client-name" name="client-name" class="form-input" placeholder="Nom du client" require>
-        </div>
-        <div class="form-group">
-            <label for="phone" class="form-label">Phone</label>
-            <input type="text" id="phone" name="phone" class="form-input" placeholder="0612345678" require>
-        </div>
-        <div class="form-group">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" id="email" name="email" class="form-input" placeholder="exemple@email.com" require>
-        </div>
-        
-        <!-- Save button to add client -->
-        <input type="submit" value="Enregistrer" name="add-client" class="btn btn-save" require>
-        
-        <!-- Delete button to delete client -->
-        
-    </form>
-
-  
-</section>
-
 
             <!-- Clients Table -->
             <section class="clients-table-section">
                 <h2 class="table-title">Liste des Clients</h2>
-                <!-- Clients Table -->
-<table class="clients-table">
-    <thead class="table-head">
-        <tr class="table-row">
-            <th class="table-header">ID</th>
-            <th class="table-header">Nom</th>
-            <th class="table-header">Téléphone</th>
-            <th class="table-header">Email</th>
-            <th class="table-header">Del</th>
-        </tr>
-    </thead>
-    <tbody class="table-body">
-        <?php
-        // Loop through the results and display them in the table
-        if (mysqli_num_rows($result) > 0) {
-            while ($row = mysqli_fetch_assoc($result)) {
-                echo "
-        <tr class='table-row'>
-        <td class='table-data'>{$row['num_client']}</td>
-        <td class='table-data'>{$row['nom']}</td>
-        <td class='table-data'>{$row['num_telephone']}</td>
-        <td class='table-data'>{$row['adresse']}</td>
-    <td class='table-data'>
-        <a href='../phpfunctions/deleteClient.php?id={$row['num_client']}' class='btn btn-delete'>Supprimer</a>
-    </td>
-</tr>";
-
-            }
-        } else {
-            echo "<tr><td colspan='5' class='table-data'>Aucun client trouvé.</td></tr>";
-        }
-        ?>
-    </tbody>
-</table>
+                <table class="clients-table">
+                    <thead class="table-head">
+                        <tr class="table-row">
+                            <th class="table-header">ID</th>
+                            <th class="table-header">Nom</th>
+                            <th class="table-header">Téléphone</th>
+                            <th class="table-header">Email</th>
+                            <th class="table-header">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-body">
+                        <?php
+                        if (count($clients) > 0) {
+                            foreach ($clients as $client) {
+                                echo "
+                                    <tr class='table-row'>
+                                        <td class='table-data'>{$client['id']}</td>
+                                        <td class='table-data'>{$client['username']}</td>
+                                        <td class='table-data'>{$client['email']}</td>
+                                        <td class='table-data'>
+                                            <a href='Clients.php?delete_id={$client['id']}' class='btn btn-delete'>Supprimer</a>
+                                        </td>
+                                    </tr>";
+                            }
+                        } else {
+                            echo "<tr><td colspan='5' class='table-data'>Aucun client trouvé.</td></tr>";
+                        }
+                        ?>
+                    </tbody>
+                </table>
             </section>
         </main>
     </div>

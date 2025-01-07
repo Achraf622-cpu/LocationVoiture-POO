@@ -1,34 +1,48 @@
 <?php
-include 'php.php';
-// Count clients
-$client_count = 0;
-$result = $conn->query("SELECT COUNT(*) AS total_clients FROM Clients");
-if ($result) {
-    $row = $result->fetch_assoc();
-    $client_count = $row['total_clients'];
+require_once '../phpfunctions/php.php';
+
+class Dashboard {
+    private $db;
+
+    public function __construct($db) {
+        $this->db = $db;
+    }
+
+    public function getCount($tableName) {
+        // Ensure that table names are safe or predefined
+        $validTables = ['Clients', 'Voitures', 'contracts'];
+        if (!in_array($tableName, $validTables)) {
+            return 0; // Invalid table name
+        }
+
+        try {
+            $query = "SELECT COUNT(*) AS total FROM $tableName";
+            $stmt = $this->db->prepare($query);
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result['total'] ?? 0;
+        } catch (PDOException $e) {
+            // Handle query failure
+            return 0;
+        }
+    }
 }
 
-// Count cars
-$car_count = 0;
-$result = $conn->query("SELECT COUNT(*) AS total_cars FROM Voitures");
-if ($result) {
-    $row = $result->fetch_assoc();
-    $car_count = $row['total_cars'];
-}
 
-// Count contracts
-$contract_count = 0;
-$result = $conn->query("SELECT COUNT(*) AS total_contracts FROM contracts");
-if ($result) {
-    $row = $result->fetch_assoc();
-    $contract_count = $row['total_contracts'];
-}
+// Initialize database connection
+$database = new Database();
+$conn = $database->getConnection(); // Ensure Database class has a getConnection method.
 
-$conn->close();
+$dashboard = new Dashboard($conn);
+
+// Fetch counts
+// Fetch counts
+$client_count = $dashboard->getCount('Clients');
+$car_count = $dashboard->getCount('Voitures');
+$contract_count = $dashboard->getCount('contracts');
+
+
 ?>
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -39,31 +53,30 @@ $conn->close();
 </head>
 <body>
     <div class="dashboard">
-      <?php  include('../layout/_HEAD.php') ?>
+        <?php include('../layout/_HEAD.php'); ?>
 
         <!-- Main Content -->
         <main>
             <header class="header">
-                <div>27/12/2020 01:37:05</div>
+                <div><?= date('d/m/Y H:i:s'); ?></div>
                 <button class="logout-btn">Logout</button>
             </header>
 
             <!-- Statistics -->
             <section class="statistics">
-    <div class="stat-card revenue">
-        <p>CONTRATS</p>
-        <h2><?= htmlspecialchars($contract_count); ?></h2>
-    </div>
-    <div class="stat-card cars">
-        <p>VOITURES</p>
-        <h2><?= htmlspecialchars($car_count); ?></h2>
-    </div>
-    <div class="stat-card clients">
-        <p>CLIENTS</p>
-        <h2><?= htmlspecialchars($client_count); ?></h2>
-    </div>
-</section>
-
+                <div class="stat-card revenue">
+                    <p>CONTRATS</p>
+                    <h2><?= htmlspecialchars($contract_count); ?></h2>
+                </div>
+                <div class="stat-card cars">
+                    <p>VOITURES</p>
+                    <h2><?= htmlspecialchars($car_count); ?></h2>
+                </div>
+                <div class="stat-card clients">
+                    <p>CLIENTS</p>
+                    <h2><?= htmlspecialchars($client_count); ?></h2>
+                </div>
+            </section>
 
             <!-- Tables -->
             <section class="tables">
