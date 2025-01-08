@@ -3,8 +3,9 @@ class Database {
     private $host = 'localhost';
     private $dbname = 'location';
     private $username = 'root';
-    private $password = 'password';
-    public $conn; 
+    private $password = '1234';
+    public $conn;
+
 
     public function __construct() {
         try {

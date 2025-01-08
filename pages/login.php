@@ -27,6 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user-login'])) {
             if ($_SESSION['user_role'] === 'admin') {
                 header("Location: index.php");
             } else {
+
                 header("Location: clietns.php");
             }
             exit();
