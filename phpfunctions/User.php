@@ -3,20 +3,20 @@ class User {
     protected $db;
     public $email;
     protected $password;
-    protected $role; // Changed to protected
+    protected $role;
 
     public function __construct($dbConnection) {
         $this->db = $dbConnection;
     }
 
-    public function setEmail($email) {
+    public function Email($email) {
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             throw new Exception("Invalid email format.");
         }
         $this->email = $email;
     }
 
-    // Method to set and hash the password with validation
+ 
     public function setPassword($password) {
         if (strlen($password) < 8) {
             throw new Exception("Password must be at least 8 characters long.");
@@ -24,7 +24,7 @@ class User {
         $this->password = password_hash($password, PASSWORD_DEFAULT);
     }
 
-    // Method to set the role
+
     public function setRole($role) {
         $validRoles = ['admin', 'user']; // Define valid roles
         if (!in_array($role, $validRoles)) {
@@ -33,7 +33,7 @@ class User {
         $this->role = $role;
     }
 
-    // Login method
+
     public function login($email, $password) {
         $sql = "SELECT * FROM users WHERE email = :email";
         $stmt = $this->db->prepare($sql);
@@ -53,7 +53,7 @@ class User {
     }
 
 public function register($email, $password1, $password2, $role = 'client') {
-    // Validate role
+
     $validRoles = ['admin', 'client'];
     if (!in_array($role, $validRoles)) {
         throw new Exception("Invalid role. Valid roles are: " . implode(", ", $validRoles));
@@ -63,11 +63,11 @@ public function register($email, $password1, $password2, $role = 'client') {
         throw new Exception("Passwords do not match.");
     }
 
-    // Hash password
+
     $user_password = password_hash($password1, PASSWORD_BCRYPT);  
     $username = strstr($email, '@', true); 
 
-    // Check if the email already exists
+
     $sql = "SELECT * FROM users WHERE email = :email";
     $stmt = $this->db->prepare($sql);
     $stmt->bindParam(':email', $email, PDO::PARAM_STR);
@@ -86,7 +86,7 @@ public function register($email, $password1, $password2, $role = 'client') {
     $stmt->bindParam(':role', $role, PDO::PARAM_STR);
 
     if ($stmt->execute()) {
-        return true;  // Registration successful
+        return true;  
     } else {
         throw new Exception("An error occurred during registration.");
     }

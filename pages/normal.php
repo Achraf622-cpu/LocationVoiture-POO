@@ -10,10 +10,10 @@ session_start();
 include_once 'php.php';
 include_once 'clients.php';
 
-// Initialize Database and Client class
+
 try {
     $db = new Database();
-    $conn = $db->getConnection();
+    $conn = $db->conn;
     $client = new Client($conn);
 } catch (Exception $e) {
     die("Error initializing application: " . $e->getMessage());

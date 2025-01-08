@@ -31,7 +31,7 @@ class Dashboard {
 
 // Initialize database connection
 $database = new Database();
-$conn = $database->getConnection(); // Ensure Database class has a getConnection method.
+$conn = $database->conn; // Ensure Database class has a getConnection method.
 
 $dashboard = new Dashboard($conn);
 

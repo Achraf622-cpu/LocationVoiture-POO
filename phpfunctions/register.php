@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user-register'])) {
         // Attempt registration
         if ($user->register($email, $password1, $password2, $role)) {
             $_SESSION['success'] = "Registration successful! You can now log in.";
-            header("Location: login.php");
+            header("Location: ../pages/login.php");
             exit();
         }
     } catch (Exception $e) {
@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user-register'])) {
                 <input type="submit" class="button" name="user-register" value="Register">
             </form>
             <div class="signup">
-                <span class="signup">Already have an account? <a href="login.php">Login</a></span>
+                <span class="signup">Already have an account? <a href="../pages/login.php">Login</a></span>
             </div>
         </div>
     </div>

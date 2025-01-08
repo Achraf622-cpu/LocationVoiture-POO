@@ -5,7 +5,7 @@ include '../phpfunctions/User.php';
 
 
 $db = new Database();
-$user = new User($db->getConnection());
+$user = new User($db->conn);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user-login'])) {
     try {
@@ -25,16 +25,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user-login'])) {
 
 
             if ($_SESSION['user_role'] === 'admin') {
-                header("Location: index.php"); // Redirect admin to index.php
+                header("Location: index.php");
             } else {
-                header("Location: voiture_client.php"); // Redirect client to index-clients.php
+
+                header("Location: clietns.php");
             }
             exit();
         } else {
             throw new Exception("Invalid email or password.");
         }
     } catch (Exception $e) {
-        // Store the error message in the session
+
         $_SESSION['error'] = $e->getMessage();
     }
 }
@@ -70,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user-login'])) {
         <input type="submit" class="button" name="user-login" value="Login">
       </form>
       <div class="signup">
-        <span>Don't have an account? <a href="register.php">Signup</a></span>
+        <span>Don't have an account? <a href="../phpfunctions/register.php">Signup</a></span>
       </div>
     </div>
   </div>

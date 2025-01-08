@@ -1,9 +1,8 @@
 <?php
 class Voiture {
     private $conn;
-    private $table = "Voitures";
+    public $table = "Voitures";
 
-    // Define car properties
     public $num_immatriculation;
     public $marque;
     public $modele;
@@ -41,7 +40,7 @@ class Voiture {
     }
 
     // Get all cars
-    public function getAll() {
+    public function All() {
         $query = "SELECT * FROM $this->table";
         $stmt = $this->conn->query($query);
         return $stmt;
