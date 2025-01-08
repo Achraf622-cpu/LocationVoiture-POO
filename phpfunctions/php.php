@@ -4,7 +4,7 @@ class Database {
     private $dbname = 'location';
     private $username = 'root';
     private $password = 'password';
-    public $conn;
+    public $conn; 
 
     public function __construct() {
         try {
@@ -13,11 +13,6 @@ class Database {
         } catch (PDOException $e) {
             die("Database connection failed: " . $e->getMessage());
         }
-    }
-
-    // Getter method to access the connection
-    public function getConnection() {
-        return $this->conn;
     }
 }
 ?>

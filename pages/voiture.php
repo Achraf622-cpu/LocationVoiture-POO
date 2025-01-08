@@ -2,11 +2,11 @@
 include '../phpfunctions/php.php';
 include '../phpfunctions/voitures.php';
 
-// Initialize the database and voiture classes
-$db = new Database();
-$voiture = new Voiture($db->getConnection());
 
-// Handle form submission to add a car
+$db = new Database();
+$voiture = new Voiture($db->conn);
+
+
 if (isset($_POST['add-voiture'])) {
     // Capture form data
     $voiture->num_immatriculation = $_POST['num_immatriculation'];
@@ -37,7 +37,7 @@ if (isset($_GET['delete'])) {
 }
 
 // Fetch all cars
-$cars = $voiture->getAll(); // Use the getAll method to fetch the cars
+$cars = $voiture->All(); // Use the getAll method to fetch the cars
 
 ?>
 

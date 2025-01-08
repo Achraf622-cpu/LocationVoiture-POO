@@ -7,7 +7,7 @@ session_start();
 
 // Create a new instance of the Client class
 $database = new Database();
-$conn = $database->getConnection();
+$conn = $database->conn;
 $client = new Client($conn);
 
 // Check if a client needs to be deleted (banned)
