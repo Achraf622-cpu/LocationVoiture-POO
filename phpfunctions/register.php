@@ -1,11 +1,10 @@
 <?php
 session_start();
-include 'php.php';
-include 'User.php';
+include 'php.php';  // Include database connection
+include 'User.php'; // Include User class
 
-// Initialize the database and user class
-$db = new Database();
-$user = new User($db->conn);
+// Initialize the user class (no arguments needed)
+$user = new Client();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user-register'])) {
     try {
@@ -14,15 +13,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user-register'])) {
         $password1 = trim($_POST['user_password1']);
         $password2 = trim($_POST['user_password2']);
         
-        // Optionally get role from form (default to 'client')
-        $role = isset($_POST['role']) ? $_POST['role'] : 'client';
-
         // Attempt registration
-        if ($user->register($email, $password1, $password2, $role)) {
-            $_SESSION['success'] = "Registration successful! You can now log in.";
-            header("Location: ../pages/login.php");
-            exit();
-        }
+        $user->register($email, $password1, $password2);
+
+        // If registration is successful
+        $_SESSION['success'] = "Registration successful! You can now log in.";
+        header("Location: ../pages/login.php");
+        exit();
     } catch (Exception $e) {
         $_SESSION['error'] = $e->getMessage();  // Store error message in session
     }
@@ -56,7 +53,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user-register'])) {
                 <input type="email" id="user-email" name="user-email" placeholder="Enter your email" required>
                 <input type="password" id="user_password1" name="user_password1" placeholder="Enter your password" required>
                 <input type="password" id="user_password2" name="user_password2" placeholder="Confirm your password" required>
-                
                 
                 <input type="submit" class="button" name="user-register" value="Register">
             </form>

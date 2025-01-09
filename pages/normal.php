@@ -12,9 +12,7 @@ include_once 'clients.php';
 
 
 try {
-    $db = new Database();
-    $conn = $db->conn;
-    $client = new Client($conn);
+    $client = new Client();
 } catch (Exception $e) {
     die("Error initializing application: " . $e->getMessage());
 }

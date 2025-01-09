@@ -3,8 +3,8 @@ include '../phpfunctions/php.php';
 include '../phpfunctions/Contrats.php';
 session_start();
 
-$database = new Database();
-$conn = $database->conn;
+
+
 
 // Create a new instance of the Contrat class
 $contrat = new Contrat($conn);
