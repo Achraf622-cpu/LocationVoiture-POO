@@ -4,8 +4,8 @@ include '../phpfunctions/php.php';
 include '../phpfunctions/User.php';
 
 
-$db = new Database();
-$user = new User($db->conn);
+
+$user = new Client();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user-login'])) {
     try {
