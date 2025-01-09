@@ -1,8 +1,4 @@
 <?php
-$host = 'localhost';
-$dbname = 'location';
-$username = 'root';
-$password = 'password';
 
 try {
     // Create a PDO connection
